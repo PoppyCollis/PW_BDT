@@ -1,0 +1,10 @@
+subject....participant index
+session....session index
+pR_pL......ratio of p(stimulus=right) to p(stimulus=left)
+vR_vL......ratio of reward for correct "right" response to reward of correct "left" response
+trial......trial number
+stimulus...direction of stimulus, 1=right, 0=left
+r1.........type 1 response, 1=right, 0=left
+r2.........type 2 response, 1=high confidence, 0=low confidence
+RT1........response time for type 1, time (s) between stimulus presentation and button press
+RT2........response time for type 2, time (s) between stimulus presentation and button press
