@@ -1,0 +1,17 @@
+# Ignore Python virtual environments
+.venv/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Byte-compiled and optimized files
+*.pyc
+
+# VSCode settings (optional)
+.vscode/
+
+# Jupyter Notebook checkpoints (optional)
+.ipynb_checkpoints/
