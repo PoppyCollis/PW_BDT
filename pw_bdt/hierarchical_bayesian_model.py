@@ -59,7 +59,7 @@ with pm.Model() as model:
                         observed=meta_d_prime_values)
 
     # Run inference
-    trace = pm.sample(1000, tune=1000, chains=4, return_inferencedata=True)
+    trace = pm.sample(2000, tune=2000, chains=4, return_inferencedata=True)
     print(trace)
     save_path = current_dir.parent / "data" / "sensitivity_hierarchical_trace.nc"
     az.to_netcdf(trace, save_path)
