@@ -1,0 +1,10 @@
+Important assumptions made in Locke
+
+1. The concept behind computing a separate sensitivity parameter for confidence is that ad-
+ditional noise may have been applied to the internal measurement between the Type 1 and
+Type 2 decisions (Maniscalco and Lau, 2016).
+
+2. Initial d prime fit assumes unit variance on likelihod distributions.
+
+3. assume unit variance of the meta d prime too and that they are equally distributed from one another. 
+

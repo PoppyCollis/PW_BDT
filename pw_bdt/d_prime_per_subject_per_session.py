@@ -36,15 +36,26 @@ def main():
     # Load data
     current_dir = Path(__file__).resolve().parent
     data_path = current_dir.parent / "data" / "rawChoiceData.txt"
-    save_path = current_dir.parent / "data" / "dprime_per_ppt_per_session.csv"
+    save_path_session = current_dir.parent / "data" / "dprime_per_subject_per_session.csv"
+    save_path_subject = current_dir.parent / "data" / "dprime_per_subject.csv"
+
     df = pd.read_csv(data_path, sep=",")
 
     # Compute d′ per (subject, session)
     dprime_df = df.groupby(['subject', 'session']).apply(compute_dprime).reset_index()
     dprime_df.columns = ['subject', 'session', 'd_prime']
     print("d′ computed for all participants and sessions")
-    
     print(dprime_df) 
 
-    # Save to file
-    dprime_df.to_csv(save_path, index=False)
+    # Save session-level d′
+    dprime_df.to_csv(save_path_session, index=False)
+
+    # Compute and save subject-level average d′
+    dprime_avg = dprime_df.groupby("subject")["d_prime"].mean().reset_index()
+    dprime_avg.columns = ["subject", "d_prime_avg"]
+    dprime_avg.to_csv(save_path_subject, index=False)
+    print("Average d′ per subject saved")
+    
+if __name__ == "__main__":
+    main()
+    
