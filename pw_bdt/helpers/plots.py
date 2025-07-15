@@ -18,3 +18,34 @@ def plot_shrinkage(comparison_df):
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+  
+
+def plot_dprime_per_sub_per_session(df):  
+    # Define custom colors for specific subjects
+    subject_colors = {
+        3: 'lightblue',
+        9: 'mediumaquamarine',  # mint green
+        4: 'limegreen',
+        7: 'darkkhaki',         # ochre
+        10: 'orange',
+        5: 'lightcoral',        # light red
+        1: 'mediumpurple',
+        2: 'magenta', 
+        6: 'pink',
+        8: 'turquoise'
+    }
+    #default_color = 'lightgrey'
+
+    plt.figure(figsize=(10, 6))
+
+    for subject_id, group in df.groupby("subject"):
+        color = subject_colors.get(subject_id)
+        plt.plot(group["session"], group["d_prime"], marker="o", label=f"Subject {subject_id}", color=color)
+
+    plt.xlabel("Session Number")
+    plt.ylabel("d′ (Type 1 Sensitivity)")
+    plt.title("d′ Over Sessions by Subject")
+    plt.legend(title="Subject", bbox_to_anchor=(1.05, 1), loc="upper left")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()

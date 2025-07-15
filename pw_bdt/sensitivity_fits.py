@@ -1,8 +1,7 @@
 import pandas as pd
 from pathlib import Path
 from pw_bdt.helpers.utils import z_transform
-
-
+from pw_bdt.helpers.plots import plot_dprime_per_sub_per_session
 
 def compute_dprime(group):
     """
@@ -98,6 +97,11 @@ def main():
     result_avg = result.groupby("subject")[["d_prime", "meta_d_prime", "m_ratio"]].mean().reset_index()
     result_avg.to_csv(save_path_subject, index=False)
     print("Saved subject-level averages to", save_path_subject)
+    
+    df2 = pd.read_csv(save_path_session, sep=",")
+    
+    plot_dprime_per_sub_per_session(df2)
+
 
 if __name__ == "__main__":
     main()
