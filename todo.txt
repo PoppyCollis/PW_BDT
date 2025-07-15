@@ -8,3 +8,4 @@ Type 2 decisions (Maniscalco and Lau, 2016).
 
 3. assume unit variance of the meta d prime too and that they are equally distributed from one another. 
 
+does 0.5 probability in extrema cases make sense for metad when I am looking at areas A, B, C and D?
