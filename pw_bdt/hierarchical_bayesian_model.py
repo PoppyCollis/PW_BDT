@@ -61,7 +61,7 @@ with pm.Model() as model:
     # Run inference
     trace = pm.sample(1000, tune=1000, chains=4, return_inferencedata=True)
     print(trace)
-    save_path = current_dir.parent / "data" / "dprime_hierarchical_trace.nc"
+    save_path = current_dir.parent / "data" / "sensitivity_hierarchical_trace.nc"
     az.to_netcdf(trace, save_path)
     
     # summary = az.summary(trace, var_names=["d_subj", "sigma_type1", "sigma_obs"])
