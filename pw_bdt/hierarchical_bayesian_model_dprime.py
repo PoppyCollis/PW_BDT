@@ -3,16 +3,17 @@ import arviz as az
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
+from pw_bdt.helpers.plots import plot_shrinkage
 
 # Load data
 current_dir = Path(__file__).resolve().parent
 data_path = current_dir.parent / "data" / "dprime_per_subject_per_session.csv"
 df = pd.read_csv(data_path, sep=",")
 
-
 # Preprocess
 # Create a mapping from subject labels to integer indices
 subjects = df['subject'].unique()
+print(subjects)
 subject_to_idx = {s: i for i, s in enumerate(subjects)}
 df['subject_idx'] = df['subject'].map(subject_to_idx)
 
@@ -43,11 +44,27 @@ with pm.Model() as model:
     print(trace)
     save_path = current_dir.parent / "data" / "dprime_hierarchical_trace.nc"
     az.to_netcdf(trace, save_path)
-
     
     summary = az.summary(trace, var_names=["d_subj", "sigma_type1", "sigma_obs"])
     print(summary)
     az.plot_posterior(trace, var_names=["d_subj"], coords={"d_subj_dim_0": [0, 1, 2]})
     plt.show()
-
     
+  
+    # Plot shrinkage
+    # Compute empirical mean d′ per subject
+    empirical_means = df.groupby("subject")["d_prime"].mean().reset_index()
+    empirical_means.columns = ["subject", "empirical_d_prime"]
+
+    # Extract posterior means for d_subj[i]
+    posterior_means = az.summary(trace, var_names=["d_subj"])["mean"].reset_index()
+    posterior_means["subject_index"] = posterior_means["index"].str.extract(r"(\d+)").astype(int)
+    posterior_means["subject"] = posterior_means["subject_index"] + 1  # Fix the mismatch
+    posterior_means.columns = ["index", "posterior_d_prime", "subject_index", "subject"]
+
+    # Merge the two
+    comparison_df = pd.merge(empirical_means, posterior_means[["subject", "posterior_d_prime"]], on="subject")
+
+    plot_shrinkage(comparison_df)
+
+
