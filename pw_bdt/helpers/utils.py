@@ -1,6 +1,5 @@
 from scipy.stats import norm
 
-
 def z_transform(p, n, correction=0.5):
     # Prevent z-transform from returning inf/-inf
     # Macmillan & Kaplan, 1985 correction:
