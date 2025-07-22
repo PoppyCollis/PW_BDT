@@ -21,25 +21,34 @@ df['subject_idx'] = df['subject'].map(subject_to_idx)
 subject_idx = df['subject_idx'].values
 
 d_prime_values = df['d_prime'].values
-meta_d_prime_values = df['meta_d_prime'].values + 0.4# / df['m_ratio']
+meta_d_prime_values = df['meta_d_prime'].values
 
 
 # Build and sample model
 with pm.Model() as model:
     # Hyperpriors
-    mu_d = 1.0
+    hyper_prior_mu_d = 1.0
     sigma_type1 = pm.Uniform('sigma_type1', lower=0.1, upper=5)
     sigma_type2 = pm.Uniform('sigma_type2', lower=0.1, upper=5)
 
     # Bounded subject-level parameters
-    d_subj = pm.TruncatedNormal(
-        'd_subj', mu=mu_d, sigma=sigma_type1, lower=0, upper=3,
-        shape=N_subjects
-    )
-    meta_d_subj = pm.TruncatedNormal(
-        'meta_d_subj', mu=0.8 * d_subj, sigma=sigma_type2, lower=0, upper=3,
-        shape=N_subjects
-    )
+    # d_subj = pm.TruncatedNormal(
+    #     'd_subj', mu=hyper_prior_mu_d, sigma=sigma_type1, lower=0, upper=3,
+    #     shape=N_subjects
+    # )
+    d_subj = pm.Normal("d_subj", mu=hyper_prior_mu_d, sigma=sigma_type1, shape=N_subjects)
+    
+    # meta_d_subj = pm.TruncatedNormal(
+    #     'meta_d_subj', mu=0.8 * d_subj, sigma=sigma_type2, lower=0, upper=3,
+    #     shape=N_subjects
+    # )
+    
+    meta_d_subj = pm.Normal("meta_d_subj",
+                            mu=0.8 * d_subj,
+                            sigma=sigma_type2,
+                            shape=N_subjects)
+    
+    
 
     # Subject-specific noise
     sigma_subj = pm.Uniform('sigma_subj', lower=0.1, upper=5.0, shape=N_subjects)
