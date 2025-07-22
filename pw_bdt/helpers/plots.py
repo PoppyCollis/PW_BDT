@@ -44,6 +44,7 @@ def plot_dprime_per_sub_per_session(df):
 
     plt.xlabel("Session Number")
     plt.ylabel("d′ (Type 1 Sensitivity)")
+    plt.ylim(0.5,3)
     plt.title("d′ Over Sessions by Subject")
     plt.legend(title="Subject", bbox_to_anchor=(1.05, 1), loc="upper left")
     plt.grid(True)

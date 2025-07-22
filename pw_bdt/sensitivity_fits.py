@@ -43,6 +43,8 @@ def compute_meta_dprime(group):
     stim = group['stimulus']
     resp = group['r1']
     conf = group['r2']
+    
+    #d_prime_emp = compute_dprime(group)
 
     # Define key high-confidence signal detection outcomes
     pA = ((stim == 0) & (resp == 0) & (conf == 1)).sum() # High Conf | Correct rejection
@@ -54,6 +56,7 @@ def compute_meta_dprime(group):
     nM  = ((stim == 1) & (resp == 0)).sum()
     nFA = ((stim == 0) & (resp == 1)).sum()
     nH  = ((stim == 1) & (resp == 1)).sum()
+    
 
     # Avoid div-by-zero and degenerate z-scores
     p_high_CR = pA / nCR if nCR > 0 else 0.5
@@ -65,9 +68,21 @@ def compute_meta_dprime(group):
     z_high_M  = z_transform(p_high_M, nM) # B
     z_high_FA = z_transform(p_high_FA, nFA) # C
     z_high_H  = z_transform(p_high_H, nH) # D
-
+    
+    k2_low = (z_high_CR - z_high_M)
+    k2_high = (z_high_H - z_high_FA)
+    
     # Meta-d′ as z(H) - z(FA) using confidence-conditioned responses
-    meta_d_prime = 0.5 * ((z_high_CR - z_high_M) + (z_high_H - z_high_FA))
+    meta_d_prime = 0.5 * (k2_low + k2_high)
+    
+    # # Rescale each k2 into Type-1 space using m-ratio
+    # alpha = meta_d_prime_space2 / d_prime_emp
+    # k1_low  = alpha * k2_low
+    # k1_high = alpha * k2_high
+    
+    # # Final meta-d′ in Type-1 units
+    # meta_d_prime_space1 = 0.5 * (k1_low + k1_high)
+
     return meta_d_prime
     
 def main():
@@ -75,6 +90,7 @@ def main():
     data_path = current_dir.parent / "data" / "rawChoiceData.txt"
     save_path_session = current_dir.parent / "data" / "sensitivity_per_subject_per_session.csv"
     save_path_subject = current_dir.parent / "data" / "sensitivity_per_subject.csv"
+
 
     df = pd.read_csv(data_path, sep=",")
 
@@ -100,7 +116,7 @@ def main():
     
     df2 = pd.read_csv(save_path_session, sep=",")
     
-    plot_dprime_per_sub_per_session(df2)
+    #plot_dprime_per_sub_per_session(df2)
 
 
 if __name__ == "__main__":
