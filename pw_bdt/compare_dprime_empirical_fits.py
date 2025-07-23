@@ -24,12 +24,14 @@ df_locke = df_locke.rename(columns={"sidx": "subject"})
 df_locke["session"] = df_locke.groupby("subject").cumcount() + 1   # 1-7 within each subject
 df_locke = df_locke[["subject", "session", "dPrime", "metadPrime"]]
 
+
 # ---------- 4. inner-join on subject×session -------------------
 df = pd.merge(df_my,
               df_locke,
               on=["subject", "session"],
               how="inner",
               suffixes=("_my", "_locke"))
+
 
 assert len(df) == 70, "Something mismatched—expecting 70 rows (10×7)."
 

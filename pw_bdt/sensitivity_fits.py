@@ -3,6 +3,13 @@ from pathlib import Path
 from pw_bdt.helpers.utils import z_transform
 from pw_bdt.helpers.plots import plot_dprime_per_sub_per_session
 
+def discard_warmup_trials(df, warmup_count=100):
+    """
+    Remove the first N (e.g., 100) trials from each subject-session pair.
+    """
+    return df.groupby(['subject', 'session'], group_keys=False).apply(lambda g: g.iloc[warmup_count:])
+
+
 def compute_dprime(group):
     """
         Function to compute d' per ppt per session
@@ -38,13 +45,13 @@ def compute_meta_dprime(group):
     Assumes 'stimulus', 'r1', and 'confidence' columns exist:
     - stimulus: 0 (left) or 1 (right)
     - r1: 0 or 1 (initial binary decision)
-    - confidence: 1 (low) or 2 (high)
+    - confidence: 0 (low) or 1 (high)
     """
     stim = group['stimulus']
     resp = group['r1']
     conf = group['r2']
     
-    #d_prime_emp = compute_dprime(group)
+    d_prime_emp = compute_dprime(group)
 
     # Define key high-confidence signal detection outcomes
     pA = ((stim == 0) & (resp == 0) & (conf == 1)).sum() # High Conf | Correct rejection
@@ -75,15 +82,21 @@ def compute_meta_dprime(group):
     # Meta-d′ as z(H) - z(FA) using confidence-conditioned responses
     meta_d_prime = 0.5 * (k2_low + k2_high)
     
-    # # Rescale each k2 into Type-1 space using m-ratio
-    # alpha = meta_d_prime_space2 / d_prime_emp
-    # k1_low  = alpha * k2_low
-    # k1_high = alpha * k2_high
+    # Rescale each k2 into Type-1 space using m-ratio
+    alpha = meta_d_prime / d_prime_emp 
+    k1_low  = alpha * k2_low
+    k1_high = alpha * k2_high
     
-    # # Final meta-d′ in Type-1 units
-    # meta_d_prime_space1 = 0.5 * (k1_low + k1_high)
-
+    # Final meta-d′ in Type-1 units
+    meta_d_prime_space1 = 0.5 * (k1_low + k1_high)
+    
+    # return meta_d_prime_space1
     return meta_d_prime
+
+    
+    
+    
+    
     
 def main():
     current_dir = Path(__file__).resolve().parent
@@ -93,6 +106,7 @@ def main():
 
 
     df = pd.read_csv(data_path, sep=",")
+    df = discard_warmup_trials(df, warmup_count=100)
 
     # Per session
     result = df.groupby(['subject', 'session']).apply(
